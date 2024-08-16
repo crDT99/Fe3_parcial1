@@ -10,6 +10,9 @@ const Form = () => {
   const [correct, setCorrect] = useState(false);
   const [error, setError] = useState(false);
 
+  // Declaración de errorMsg dentro del componente
+  const [errorMsg, setErrorMsg] = useState("");
+
   const handleChangeMarca = (e) => {
     setCarro({ ...carro, marca: e.target.value });
   };
@@ -19,27 +22,28 @@ const Form = () => {
   };
 
   const handleSubmit = (event) => {
-    event.preventDefault(); //previene recarga
+    event.preventDefault();
     const min6charactersRegex = /^.{6,}$/;
-    console.log(carro);
-    console.log(min6charactersRegex.test(carro.color));
+
+    // Validaciones y actualización de errorMsg
+    setErrorMsg(
+      carro.marca.trim().length < 3
+        ? "La marca debe tener al menos 3 caracteres"
+        : carro.marca.startsWith(" ")
+        ? "La marca no puede empezar por espacio vacío"
+        : !min6charactersRegex.test(carro.color)
+        ? "El color debe tener al menos 6 caracteres"
+        : ""
+    );
 
     if (
-      /*
-    validacion#1: la longitud mínima del texto ingresado deberá ser de 3 caracteres y no deberá contener espacios en blanco al comienzo.
-    */
       carro.marca.trim().length > 3 &&
       !carro.marca.startsWith(" ") &&
-      /*
-      validacion#2: debemos validar que el segundo input contenga al menos al menos 6 caracteres.
-      */
       min6charactersRegex.test(carro.color)
     ) {
-      console.log("todo ok");
       setCorrect(true);
       setError(false);
     } else {
-      console.log("error >:(");
       setError(true);
     }
   };
@@ -63,25 +67,28 @@ const Form = () => {
               type="text"
               value={carro.marca}
               onChange={handleChangeMarca}
+              placeholder="casa matriz"
             />
             <label>Color: </label>
             <input
               type="text"
               value={carro.color}
               onChange={handleChangecolor}
+              placeholder="Hexadecimal"
             />
             <button>Enviar</button>
           </form>
           <button onClick={reset}>Reset form</button>
         </>
       )}
-
-      {error ? (
+      {error && (
         <h4 style={{ color: "red" }}>
-          Error: Por favor, coloque la información correctamente
+          Error: Por favor, coloque la información correctamente <br />
+          {errorMsg}
         </h4>
-      ) : null}
+      )}
     </>
   );
 };
+
 export default Form;
